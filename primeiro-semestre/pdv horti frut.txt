@@ -1,0 +1,318 @@
+﻿#include <stdio.h>
+#include <string.h>
+ 
+#define MAX_ITENS 100
+#define MAX_PRODUTOS 10
+#define MAX_VENDAS 100
+ 
+typedef struct {
+    char nome[50];
+    float preco;
+    float estoque;
+} Produto;
+ 
+typedef struct {
+    Produto produto;
+    float quantidade;
+} Item;
+ 
+typedef struct {
+    Item itens[MAX_ITENS];
+    int numItens;
+    float total;
+    char formaPagamento[20];
+} Venda;
+ 
+Venda historicoVendas[MAX_VENDAS];
+int numVendas = 0;
+ 
+void mostrarMenu() {
+    printf("\n==== PDV - SISTEMA DE PONTO DE VENDA ====\n");
+    printf("1. Adicionar item(s) ao carrinho\n");
+    printf("2. Exibir carrinho\n");
+    printf("3. Finalizar compra\n");
+    printf("4. Remover item do carrinho\n");
+    printf("5. Exibir histórico de vendas\n");
+    printf("6. Exibir produtos disponíveis\n");
+    printf("7. Adicionar estoque de produtos\n");
+    printf("8. Sair\n");
+    printf("=========================================\n");
+}
+ 
+void exibirProdutos(Produto produtos[], int numProdutos) {
+    printf("\n==== LISTA DE PRODUTOS DISPONÍVEIS ====\n");
+    for (int i = 0; i < numProdutos; i++) {
+        printf("%d. %s - Preço: R$ %.2f/kg - Estoque: %.2f kg\n", i + 1, produtos[i].nome, produtos[i].preco, produtos[i].estoque);
+    }
+    printf("=======================================\n");
+}
+ 
+float lerQuantidade() {
+    float quantidade;
+    char input[10];
+ 
+    while (1) {
+        printf("Digite a quantidade em kg: ");
+        scanf("%s", input);
+        for (int i = 0; input[i] != '\0'; i++) {
+            if (input[i] == ',') {
+                input[i] = '.';
+            }
+        }
+ 
+        if (sscanf(input, "%f", &quantidade) == 1 && quantidade > 0) {
+            return quantidade;
+        } else {
+            printf("Quantidade inválida. Tente novamente.\n");
+        }
+    }
+}
+ 
+void adicionarItens(Item carrinho[], int *numItens, Produto produtos[], int numProdutos) {
+    int escolha;
+    char continuar;
+ 
+    do {
+        if (*numItens >= MAX_ITENS) {
+            printf("Carrinho cheio!\n");
+            return;
+        }
+ 
+        exibirProdutos(produtos, numProdutos);
+        printf("Escolha o número do produto que deseja adicionar: ");
+        scanf("%d", &escolha);
+ 
+        if (escolha < 1 || escolha > numProdutos) {
+            printf("Escolha inválida!\n");
+            return;
+        }
+ 
+        float quantidade = lerQuantidade();
+ 
+        if (quantidade > produtos[escolha - 1].estoque) {
+            printf("Quantidade indisponível em estoque. Estoque atual: %.2f kg\n", produtos[escolha - 1].estoque);
+            return;
+        }
+ 
+        // Adiciona o produto ao carrinho
+        carrinho[*numItens].produto = produtos[escolha - 1];
+        carrinho[*numItens].quantidade = quantidade;
+        produtos[escolha - 1].estoque -= quantidade;
+ 
+        (*numItens)++;
+ 
+        printf("Item adicionado ao carrinho!\n");
+ 
+        printf("Deseja adicionar outro item? (S/N): ");
+        scanf(" %c", &continuar);
+ 
+    } while (continuar == 'S' || continuar == 's');
+}
+ 
+void removerItem(Item carrinho[], int *numItens, Produto produtos[], int numProdutos) {
+    int escolha;
+ 
+    if (*numItens == 0) {
+        printf("Carrinho vazio!\n");
+        return;
+    }
+ 
+    printf("\n==== REMOVER ITEM DO CARRINHO ====\n");
+    for (int i = 0; i < *numItens; i++) {
+        printf("%d. %s - Quantidade: %.2f kg\n", i + 1, carrinho[i].produto.nome, carrinho[i].quantidade);
+    }
+    printf("Escolha o número do item que deseja remover: ");
+    scanf("%d", &escolha);
+ 
+    if (escolha < 1 || escolha > *numItens) {
+        printf("Escolha inválida!\n");
+        return;
+    }
+ 
+    // Repor o estoque do produto removido
+    for (int i = 0; i < numProdutos; i++) {
+        if (strcmp(carrinho[escolha - 1].produto.nome, produtos[i].nome) == 0) {
+            produtos[i].estoque += carrinho[escolha - 1].quantidade;
+            break;
+        }
+    }
+ 
+    // Remove o item do carrinho
+    for (int i = escolha - 1; i < *numItens - 1; i++) {
+        carrinho[i] = carrinho[i + 1];
+    }
+    (*numItens)--;
+ 
+    printf("Item removido do carrinho!\n");
+}
+ 
+void exibirCarrinho(Item carrinho[], int numItens) {
+    if (numItens == 0) {
+        printf("\nCarrinho vazio!\n");
+        return;
+    }
+ 
+    printf("\n==== ITENS NO CARRINHO ====\n");
+    for (int i = 0; i < numItens; i++) {
+        printf("%d. %s - Quantidade: %.2f kg - Preço: R$ %.2f\n", i + 1, carrinho[i].produto.nome, carrinho[i].quantidade, carrinho[i].produto.preco);
+    }
+    printf("===========================\n");
+}
+ 
+float finalizarCompra(Item carrinho[], int *numItens) {
+    float total = 0;
+ 
+    if (*numItens == 0) {
+        printf("\nCarrinho vazio! Adicione itens antes de finalizar a compra.\n");
+        return 0;
+    }
+ 
+    printf("\n==== FINALIZAR COMPRA ====\n");
+    for (int i = 0; i < *numItens; i++) {
+        float subtotal = carrinho[i].produto.preco * carrinho[i].quantidade;
+        printf("%s - Quantidade: %.2f kg - Subtotal: R$ %.2f\n", carrinho[i].produto.nome, carrinho[i].quantidade, subtotal);
+        total += subtotal;
+    }
+    printf("==========================\n");
+    printf("Total a pagar: R$ %.2f\n", total);
+ 
+    *numItens = 0; // Limpa o carrinho após finalizar a compra
+ 
+    return total;
+}
+ 
+void registrarVenda(Item carrinho[], int numItens, float total, const char* formaPagamento) {
+    if (numVendas >= MAX_VENDAS) {
+        printf("Histórico de vendas cheio!\n");
+        return;
+    }
+ 
+    historicoVendas[numVendas].total = total;
+    historicoVendas[numVendas].numItens = numItens;
+    strcpy(historicoVendas[numVendas].formaPagamento, formaPagamento);
+ 
+    for (int i = 0; i < numItens; i++) {
+        historicoVendas[numVendas].itens[i] = carrinho[i];
+    }
+ 
+    numVendas++;
+}
+ 
+void exibirHistoricoVendas() {
+    printf("\n==== HISTÓRICO DE VENDAS ====\n");
+    for (int i = 0; i < numVendas; i++) {
+        printf("Venda %d: Total: R$ %.2f - Forma de pagamento: %s\n", i + 1,
+               historicoVendas[i].total, historicoVendas[i].formaPagamento);
+    }
+    printf("==============================\n");
+}
+ 
+void adicionarEstoque(Produto produtos[], int numProdutos) {
+    int escolha;
+    float quantidade;
+ 
+    exibirProdutos(produtos, numProdutos);
+    printf("Escolha o número do produto que deseja adicionar estoque: ");
+    scanf("%d", &escolha);
+ 
+    if (escolha < 1 || escolha > numProdutos) {
+        printf("Escolha inválida!\n");
+        return;
+    }
+ 
+    quantidade = lerQuantidade();
+    // Adiciona a quantidade ao estoque do produto escolhido
+    produtos[escolha - 1].estoque += quantidade;
+    printf("Estoque atualizado! Novo estoque de %s: %.2f kg\n", produtos[escolha - 1].nome, produtos[escolha - 1].estoque);
+}
+ 
+int main() {
+    Produto produtos[MAX_PRODUTOS] = {
+        {"Banana", 3.50, 50.0},
+        {"Maçã", 4.00, 30.0},
+        {"Laranja", 2.50, 40.0},
+        {"Pera", 6.00, 20.0},
+        {"Manga", 5.00, 25.0},
+        {"Cenoura", 2.00, 15.0},
+        {"Brócolis", 3.00, 10.0},
+        {"Tomate", 4.50, 12.0},
+        {"Batata", 2.50, 20.0},
+        {"Cebola", 3.00, 18.0}
+    };
+    int numProdutos = 10;
+ 
+    Item carrinho[MAX_ITENS];
+    int numItens = 0;
+    char formaPagamento[20];
+ 
+    int opcao;
+    do {
+        mostrarMenu();
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar();  // Limpa o buffer do stdin
+ 
+        switch (opcao) {
+            case 1:
+                adicionarItens(carrinho, &numItens, produtos, numProdutos);
+                break;
+            case 2:
+                exibirCarrinho(carrinho, numItens);
+                break;
+            case 3: {
+                float total = finalizarCompra(carrinho, &numItens);
+                if (total > 0) {
+                    printf("Escolha a forma de pagamento:\n");
+                    printf("1. Crédito\n");
+                    printf("2. Débito\n");
+                    printf("3. Dinheiro\n");
+                    printf("4. Pix\n");
+                    printf("Escolha uma opção: ");
+                    int pagamentoOpcao;
+                    scanf("%d", &pagamentoOpcao);
+ 
+                    switch (pagamentoOpcao) {
+                        case 1:
+                            strcpy(formaPagamento, "Crédito");
+                            break;
+                        case 2:
+                            strcpy(formaPagamento, "Débito");
+                            break;
+                        case 3:
+                            strcpy(formaPagamento, "Dinheiro");
+                            break;
+                        case 4:
+                            strcpy(formaPagamento, "Pix");
+                            break;
+                        default:
+                            printf("Opção de pagamento inválida! Usando 'Dinheiro' como padrão.\n");
+                            strcpy(formaPagamento, "Dinheiro");
+                    }
+ 
+                    registrarVenda(carrinho, numItens, total, formaPagamento);
+                    printf("Compra finalizada com sucesso!\n");
+                }
+                break;
+            }
+            case 4:
+                removerItem(carrinho, &numItens, produtos, numProdutos);
+                break;
+            case 5:
+                exibirHistoricoVendas();
+                break;
+            case 6:
+                exibirProdutos(produtos, numProdutos);
+                break;
+            case 7:
+                adicionarEstoque(produtos, numProdutos);
+                break;
+            case 8:
+                printf("Saindo do sistema...\n");
+                break;
+            default:
+                printf("Opção inválida! Tente novamente.\n");
+        }
+    } while (opcao != 8);
+ 
+    return 0;
+}
