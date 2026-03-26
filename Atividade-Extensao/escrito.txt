@@ -1,0 +1,50 @@
+Área temática
+
+TECNOLOGIA E PRODUÇÃO · Desenvolvimento de aplicativos/ software/ website para a comunidade, organizações não governamentais
+
+        
+
+Ação
+
+Prestação de Serviço.
+
+Voz, Texto e Libras na Palma da Mão _ Aplicativo App
+
+Relatório Síntese
+O projeto, liderado por Renan Francisco Ribeiro , entregou um protótipo funcional para a tradução de voz para Libras e de Libras para texto.
+
+Em encontros presenciais, o aplicativo foi validado diretamente pelos usuários. Eles testaram a usabilidade e deram sugestões valiosas sobre a velocidade e a clareza dos sinais, essenciais para a experiência do usuário.
+
+ Foram realizadas seis oficinas e 12 sessões de teste, que geraram feedback qualitativo e 40 registros de interações, permitindo aprimoramentos significativos na ferramenta.
+
+O resultado principal foi o aumento da autonomia na comunicação para a comunidade surda. 
+
+Os próximos passos incluem o refinamento técnico do aplicativo, a colaboração com intérpretes de Libras para maior precisão e a expansão da ferramenta para uso comunitário. 
+
+Além disso, será elaborado um relatório técnico e um material de treinamento para garantir a correta utilização do app.
+
+
+
+
+         Área temática
+
+TECNOLOGIA E PRODUÇÃO · Desenvolvimento de aplicativos/ software/ website para a comunidade, organizações não governamentais
+
+        
+
+Ação
+
+Prestação de Serviço.
+
+Web Site _ Jogos Educativos para Crianças com TDAH
+
+Relatório Síntese
+O projeto "Jogos Educativos para Crianças Hiperativas" foi um sucesso notável. O projetista, Renan Francisco Ribeiro, demonstrou uma sensibilidade e um profissionalismo que foram além do esperado. A abordagem de desenvolvimento colaborativo, envolvendo desde o início profissionais da saúde e as famílias das crianças, garantiu que os jogos fossem não apenas tecnicamente eficientes, mas também pedagogicamente relevantes e emocionalmente acolhedores.
+
+Os testes com o usuário final e a validação de QA (Garantia de Qualidade) foram cruciais para o sucesso do projeto. Esses testes, conduzidos de forma rigorosa, permitiram verificar a funcionalidade, a estabilidade e a usabilidade do website educativo. 
+
+O feedback direto e a observação da interação das crianças foram fundamentais para aprimorar os jogos e comprovar sua eficácia.
+
+O resultado do projeto é um produto que realmente faz a diferença, revelando melhorias significativas na atenção e no foco das crianças. 
+
+Isso comprova que a tecnologia, quando desenvolvida com empatia, colaboração e um propósito claro, tem um poder transformador e resolutivo.
